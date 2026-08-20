@@ -2,13 +2,14 @@ package org.faketri.dto;
 
 public class Version {
 
-    private final String version;
+    private final String strFormat;
 
     public Version(String version) {
-        this.version = version;
+        this.strFormat = version;
     }
 
-    public String getVersion() {
-        return version;
+    @Override
+    public String toString() {
+        return "version = " + strFormat;
     }
 }

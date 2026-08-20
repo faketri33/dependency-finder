@@ -4,6 +4,8 @@ import org.faketri.core.BuildSystemConstants;
 import org.faketri.dto.BuildSystem;
 import org.faketri.dto.Project;
 import org.faketri.dto.Version;
+import org.faketri.logger.BaseLoggerFactory;
+import org.faketri.logger.Logger;
 import org.faketri.parser.AbstractDataParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -19,6 +21,8 @@ import java.util.Stack;
 
 public class MavenDataParser implements AbstractDataParser {
 
+    private static final Logger log = BaseLoggerFactory.getLogger(MavenDataParser.class);
+
     @Override
     public int canParse(BuildSystem buildSystem) {
         return Objects.equals(buildSystem.getName(), BuildSystemConstants.MAVEN.name()) ? 100 : 0;
@@ -30,16 +34,16 @@ public class MavenDataParser implements AbstractDataParser {
         Project project = null;
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+
             SAXParser saxParser = factory.newSAXParser();
 
             PomHandler handler = new PomHandler();
             saxParser.parse(data, handler);
 
             project = new Project(handler.name, null, new Version(handler.version));
-            IO.println(project.getName());
-            IO.println(handler.getName());
         }catch (ParserConfigurationException | SAXException ex){
-            IO.println(ex.getMessage());
+            log.error(ex.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,7 +60,7 @@ public class MavenDataParser implements AbstractDataParser {
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
             elementStack.push(qName);
-            elementValue.setLength(0); // Сброс буфера для нового тега
+            elementValue.setLength(0);
         }
 
         @Override
@@ -70,10 +74,9 @@ public class MavenDataParser implements AbstractDataParser {
                 elementStack.pop();
             }
 
-            // Проверяем, что тег находится прямо внутри корневого <project>
             if (elementStack.size() == 1 && "project".equals(elementStack.peek())) {
                 String value = elementValue.toString().trim();
-                if ("name".equals(qName)) {
+                if ("artifactId".equals(qName)) {
                     name = value;
                 } else if ("version".equals(qName)) {
                     version = value;
