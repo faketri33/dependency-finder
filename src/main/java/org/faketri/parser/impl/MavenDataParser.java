@@ -2,7 +2,8 @@ package org.faketri.parser.impl;
 
 import org.faketri.core.BuildSystemConstants;
 import org.faketri.dto.BuildSystem;
-import org.faketri.dto.Project;
+import org.faketri.dto.Dependency;
+import org.faketri.dto.Modules;
 import org.faketri.dto.Version;
 import org.faketri.logger.BaseLoggerFactory;
 import org.faketri.logger.Logger;
@@ -16,8 +17,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Stack;
+import java.util.*;
 
 public class MavenDataParser implements AbstractDataParser {
 
@@ -29,9 +29,9 @@ public class MavenDataParser implements AbstractDataParser {
     }
 
     @Override
-    public Project parse(ByteArrayInputStream data) {
+    public Modules parse(ByteArrayInputStream data) {
         Objects.requireNonNull(data);
-        Project project = null;
+        Modules project = null;
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
@@ -41,7 +41,8 @@ public class MavenDataParser implements AbstractDataParser {
             PomHandler handler = new PomHandler();
             saxParser.parse(data, handler);
 
-            project = new Project(handler.name, null, new Version(handler.version));
+            project = new Modules(new Version(handler.version), handler.name);
+            project.setDeps(handler.getDepends());
         }catch (ParserConfigurationException | SAXException ex){
             log.error(ex.getMessage());
         } catch (IOException e) {
@@ -56,6 +57,7 @@ public class MavenDataParser implements AbstractDataParser {
 
         private String name = "";
         private String version = "";
+        private final List<Dependency> depends = new ArrayList<>();
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
@@ -65,27 +67,23 @@ public class MavenDataParser implements AbstractDataParser {
 
         @Override
         public void characters(char[] ch, int start, int length) {
-            elementValue.append(ch, start, length);
+            String string = new String(ch, start, length).trim();
+            if (version.isEmpty() && Objects.equals(elementStack.peek(), "version"))
+                version = string;
+            if (Objects.equals(elementStack.peek(), "artifactId")) {
+                if (name.isEmpty()) name = string;
+                else depends.add(new Dependency(string));
+            }
         }
 
         @Override
         public void endElement(String uri, String localName, String qName) {
-            if (!elementStack.isEmpty()) {
-                elementStack.pop();
-            }
-
-            if (elementStack.size() == 1 && "project".equals(elementStack.peek())) {
-                String value = elementValue.toString().trim();
-                if ("artifactId".equals(qName)) {
-                    name = value;
-                } else if ("version".equals(qName)) {
-                    version = value;
-                }
-            }
+            elementStack.pop();
         }
 
         public String getName() { return name; }
         public String getVersion() { return version; }
+        public List<Dependency> getDepends() { return depends; }
     }
 
 }

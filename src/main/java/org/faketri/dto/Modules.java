@@ -2,13 +2,20 @@ package org.faketri.dto;
 
 import java.util.List;
 
-public class Module {
+public class Modules {
 
     private String name;
+    private List<Modules> modules;
     private List<Dependency> deps;
+    private Version version;
     private BuildSystem buildSystem;
 
-    public Module(String name, List<Dependency> deps) {
+    public Modules(Version version, String name) {
+        this.version = version;
+        this.name = name;
+    }
+
+    public Modules(String name, List<Dependency> deps) {
         this.name = name;
         this.deps = deps;
     }
@@ -35,5 +42,21 @@ public class Module {
 
     public void setBuildSystem(BuildSystem buildSystem) {
         this.buildSystem = buildSystem;
+    }
+
+    public List<Modules> getModules() {
+        return modules;
+    }
+
+    public void setModules(List<Modules> modules) {
+        this.modules = modules;
+    }
+
+    public Version getVersion() {
+        return version;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
     }
 }

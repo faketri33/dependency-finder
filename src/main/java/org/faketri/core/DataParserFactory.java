@@ -12,16 +12,23 @@ public class DataParserFactory implements AbstractDataParserFactory {
 
     private final Set<AbstractDataParser> parsers = new HashSet<>();
 
-    public boolean register(AbstractDataParser parser){
+    /**
+     * Registration {@link AbstractDataParser} in system
+     * */
+    public void register(AbstractDataParser parser){
         parsers.add(parser);
-        return true;
     }
 
+    /**
+     * Find best parser by {@link AbstractDataParser#canParse(BuildSystem buildSystem)}
+     *
+     * @return {@link AbstractDataParser} or {@code null}
+     * */
     @Override
     public AbstractDataParser getParser(BuildSystem buildSystem) {
         return parsers
                 .stream()
                 .max(Comparator.comparingInt(a -> a.canParse(buildSystem)))
-                .orElse(null);
+                .orElseThrow();
     }
 }

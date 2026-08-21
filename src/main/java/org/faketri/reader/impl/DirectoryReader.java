@@ -15,7 +15,7 @@ public class DirectoryReader implements AbstractDirectoryReader {
         if (path == null || path.isEmpty()) throw new IllegalArgumentException("Path cannot be null or empty");
         File file = new File(path);
         File[] fileArray = Objects.requireNonNull(file.listFiles());
-       return Arrays.asList(fileArray);
+        return Arrays.asList(fileArray);
     }
 
 }

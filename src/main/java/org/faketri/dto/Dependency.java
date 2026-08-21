@@ -6,6 +6,10 @@ public class Dependency {
     private Version version;
     private String type;
 
+    public Dependency(String name) {
+        this.name = name;
+    }
+
     public Dependency(String name, Version version, String type) {
         this.name = name;
         this.version = version;

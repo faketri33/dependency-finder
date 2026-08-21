@@ -19,6 +19,10 @@ public class IOPLogger extends BaseLogger implements Logger{
         this.formatter = formatter;
     }
 
+    public void setLogLevel(LoggerLevel level){
+        super.setLevel(level);
+    }
+
     @Override
     public void info(String msg) {
         handler(LoggerLevel.INFO, () -> formatter.format(LoggerLevel.INFO, name, msg));

@@ -2,6 +2,8 @@ package org.faketri.logger;
 
 public interface Logger {
 
+    void setLogLevel(LoggerLevel level);
+
     void info(String msg);
     void info(String msg, Object... obj);
 
