@@ -2,7 +2,7 @@ package org.faketri.core;
 
 import org.faketri.dto.BuildSystem;
 import org.faketri.dto.Modules;
-import org.faketri.exceptions.GlobalProxyHandler;
+import org.faketri.proxy.GlobalProxyHandler;
 import org.faketri.logger.BaseLoggerFactory;
 import org.faketri.logger.Logger;
 import org.faketri.parser.AbstractDataParser;

@@ -1,4 +1,4 @@
-package org.faketri.exceptions;
+package org.faketri.proxy;
 
 import org.faketri.logger.BaseLoggerFactory;
 import org.faketri.logger.Logger;
@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 
@@ -37,7 +38,7 @@ public class GlobalProxyHandler implements InvocationHandler {
             }
             return null;
         }, method.toString());
-    };
+    }
 
     private Object smallProfiler(Supplier<Object> supplier, String methodName){
         log.debug("Start {} method {}",target.getClass().getSimpleName(), methodName);
@@ -57,6 +58,8 @@ public class GlobalProxyHandler implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     public static <T> T newProxy(Object clazz, Class<?> interfaces) {
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(interfaces);
         return (T) Proxy.newProxyInstance(clazz.getClass().getClassLoader(), new Class[]{interfaces}, new GlobalProxyHandler(clazz));
     }
 }

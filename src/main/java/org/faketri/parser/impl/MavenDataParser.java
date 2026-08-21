@@ -67,12 +67,12 @@ public class MavenDataParser implements AbstractDataParser {
 
         @Override
         public void characters(char[] ch, int start, int length) {
-            String string = new String(ch, start, length).trim();
+            elementValue.append(ch, start, length);
             if (version.isEmpty() && Objects.equals(elementStack.peek(), "version"))
-                version = string;
+                version = elementValue.toString().trim();
             if (Objects.equals(elementStack.peek(), "artifactId")) {
-                if (name.isEmpty()) name = string;
-                else depends.add(new Dependency(string));
+                if (name.isEmpty()) name = elementValue.toString().trim();
+                else depends.add(new Dependency(elementValue.toString().trim()));
             }
         }
 

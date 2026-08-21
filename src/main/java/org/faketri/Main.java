@@ -4,7 +4,7 @@ import org.faketri.core.CoreFinderDependency;
 import org.faketri.core.DataParserFactory;
 import org.faketri.dto.Dependency;
 import org.faketri.dto.Modules;
-import org.faketri.exceptions.GlobalProxyHandler;
+import org.faketri.proxy.GlobalProxyHandler;
 import org.faketri.logger.BaseLoggerFactory;
 import org.faketri.logger.Logger;
 import org.faketri.logger.LoggerLevel;
@@ -21,12 +21,13 @@ public class Main {
     private static final DataParserFactory bs = new DataParserFactory();
 
     static {
+        GlobalProxyHandler.disableProfiling();
+        log.setLogLevel(LoggerLevel.INFO);
+
         bs.register(new MavenDataParser());
     }
 
-
     static void main() {
-        log.setLogLevel(LoggerLevel.DEBUG);
 
         AbstractFileReader proxyReader = GlobalProxyHandler.newProxy(new DefaultDataReader(), AbstractFileReader.class);
         AbstractDirectoryReader proxyDirReader = GlobalProxyHandler.newProxy(new DirectoryReader(), AbstractDirectoryReader.class);
@@ -40,7 +41,6 @@ public class Main {
 
         log.info("Project name {}", pr.getName());
         log.info("Project {}", pr.getVersion().toString());
-        for (Dependency dep : pr.getDeps())
-            log.info("Projecte deps - {}", dep.getName());
+        for (Dependency dep : pr.getDeps()) log.info("Projects deps - {}", dep.getName());
     }
 }
