@@ -34,12 +34,15 @@ public class CoreFinderDependency {
     public Modules getAll(){
         List<File> files = directoryReader.read(path);
 
-        BuildSystem bs = Objects.requireNonNull(BuildSystemDetector.detect(files));
+        BuildSystem bs = BuildSystemDetector.detect(files);
+
         log.info(bs.getFileName());
         var bf = dataReader.read(bs.getFileName());
 
         AbstractDataParser proxyParse = GlobalProxyHandler.newProxy(dataParserFactory.getParser(bs), AbstractDataParser.class);
+        Modules module = proxyParse.parse(bf);
+        module.setBuildSystem(bs);
 
-        return proxyParse.parse(bf);
+        return module;
     }
 }

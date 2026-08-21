@@ -21,8 +21,8 @@ public class Main {
     private static final DataParserFactory bs = new DataParserFactory();
 
     static {
-        GlobalProxyHandler.disableProfiling();
-        log.setLogLevel(LoggerLevel.INFO);
+        GlobalProxyHandler.enableProfiling();
+        log.setLogLevel(LoggerLevel.TRACE);
 
         bs.register(new MavenDataParser());
     }
@@ -32,15 +32,16 @@ public class Main {
         AbstractFileReader proxyReader = GlobalProxyHandler.newProxy(new DefaultDataReader(), AbstractFileReader.class);
         AbstractDirectoryReader proxyDirReader = GlobalProxyHandler.newProxy(new DirectoryReader(), AbstractDirectoryReader.class);
 
-        CoreFinderDependency cfd = new CoreFinderDependency("/home/faketri/git/my/dependency-reader",
+        CoreFinderDependency cfd = new CoreFinderDependency("/Users/vilkov/projects/dependency-finder",
                 proxyReader,
                 proxyDirReader,
                 bs
         );
         Modules pr =  cfd.getAll();
 
-        log.info("Project name {}", pr.getName());
-        log.info("Project {}", pr.getVersion().toString());
-        for (Dependency dep : pr.getDeps()) log.info("Projects deps - {}", dep.getName());
+        log.info("{}", pr);
+        for (Dependency dep : pr.getDeps())
+            log.info("{}", dep);
+
     }
 }

@@ -72,8 +72,11 @@ public class MavenDataParser implements AbstractDataParser {
                 version = elementValue.toString().trim();
             if (Objects.equals(elementStack.peek(), "artifactId")) {
                 if (name.isEmpty()) name = elementValue.toString().trim();
-                else depends.add(new Dependency(elementValue.toString().trim()));
+                else depends.add(new Dependency(elementValue.toString().trim(), null, "Dependency"));
             }
+            if (Objects.equals(elementStack.peek(), "version") && !depends.isEmpty())
+                depends.getLast().setVersion(new Version(elementValue.toString().trim()));
+
         }
 
         @Override

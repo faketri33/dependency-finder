@@ -10,6 +10,6 @@ public class Version {
 
     @Override
     public String toString() {
-        return "version = " + strFormat;
+        return strFormat;
     }
 }

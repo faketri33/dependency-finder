@@ -39,4 +39,13 @@ public class Dependency {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "Dependency{" +
+                "name='" + name + '\'' +
+                ", version=" + version +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }

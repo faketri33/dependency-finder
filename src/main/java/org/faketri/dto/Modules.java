@@ -59,4 +59,13 @@ public class Modules {
     public void setVersion(Version version) {
         this.version = version;
     }
+
+    @Override
+    public String toString() {
+        return "Modules{" +
+                "name='" + name + '\'' +
+                ", buildSystem=" + buildSystem +
+                ", version=" + version +
+                '}';
+    }
 }

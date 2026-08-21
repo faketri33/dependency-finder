@@ -25,19 +25,19 @@ public class GlobalProxyHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (!profile) return method.invoke(target, args);
+        if (!profile) safeInvoke(method, args);
+        return smallProfiler(() -> safeInvoke(method, args), method.toString());
+    }
 
-        return smallProfiler(() -> {
-            try {
-                return method.invoke(target, args);
-            } catch (IllegalAccessException e) {
-                log.error("Method name {} exception {}", method, e.getMessage());
-                //throw new RuntimeException(e);
-            } catch (InvocationTargetException e){
-                log.error("Method name {} exception {}", method, e.getTargetException());
-            }
-            return null;
-        }, method.toString());
+    private Object safeInvoke(Method method, Object[] args){
+        try {
+            return method.invoke(target, args);
+        } catch (IllegalAccessException e) {
+            log.error("Method name {} exception {}", method, e.getMessage());
+        } catch (InvocationTargetException e){
+            log.error("Method name {} exception {}", method, e.getTargetException());
+        }
+        return null;
     }
 
     private Object smallProfiler(Supplier<Object> supplier, String methodName){
