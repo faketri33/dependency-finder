@@ -1,5 +1,7 @@
 package org.faketri.logger;
 
+import java.util.function.Supplier;
+
 public abstract class BaseLogger {
 
     private LoggerLevel level;
@@ -8,9 +10,9 @@ public abstract class BaseLogger {
         this.level = level;
     }
 
-    protected void handler(LoggerLevel loggerLevel, String msg){
-        if (loggerLevel.isEnabledFor(getLevel()))
-            print(msg);
+    void handler(LoggerLevel level, Supplier<String> supplier){
+        if (level.isEnabledFor(getLevel()))
+            print(supplier.get());
     }
 
     private void print(String message){
