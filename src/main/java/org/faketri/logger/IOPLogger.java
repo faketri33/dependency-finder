@@ -1,55 +1,53 @@
 package org.faketri.logger;
 
-import java.util.function.Supplier;
+
 
 public class IOPLogger extends BaseLogger implements Logger{
 
     private final String name;
-    private final Formatter formatter;
 
-    public IOPLogger(String name) {
-        super(LoggerLevel.INFO);
+    private IOPLogger(String name, LoggerConfiguration configuration) {
+        super(configuration);
         this.name = name;
-        formatter = new DefaultFormatter();
     }
 
-    public IOPLogger(String name, Formatter formatter, LoggerLevel level) {
-        super(level);
-        this.name = name;
-        this.formatter = formatter;
+    public static IOPLogger of(String name){
+        LoggerConfiguration configuration = new LoggerConfiguration();
+        return new IOPLogger(name, configuration);
     }
 
-    public void setLogLevel(LoggerLevel level){
-        super.setLevel(level);
+    public static IOPLogger of(String name, LoggerConfiguration configuration){
+        return new IOPLogger(name, configuration);
     }
+
 
     @Override
     public void info(String msg) {
-        handler(LoggerLevel.INFO, () -> formatter.format(LoggerLevel.INFO, name, msg));
+        handler(LoggerLevel.INFO, () -> getConfiguration().getFormatter().format(LoggerLevel.INFO, name, msg));
     }
 
     @Override
     public void info(String msg, Object... obj) {
-        handler(LoggerLevel.INFO, () -> formatter.formatWithArgs(LoggerLevel.INFO, name, msg, obj));
+        handler(LoggerLevel.INFO, () -> getConfiguration().getFormatter().formatWithArgs(LoggerLevel.INFO, name, msg, obj));
     }
 
     @Override
     public void debug(String msg) {
-        handler(LoggerLevel.DEBUG, () -> formatter.format(LoggerLevel.DEBUG, name, msg));
+        handler(LoggerLevel.DEBUG, () -> getConfiguration().getFormatter().format(LoggerLevel.DEBUG, name, msg));
     }
 
     @Override
     public void debug(String msg, Object... obj) {
-        handler(LoggerLevel.DEBUG, () -> formatter.formatWithArgs(LoggerLevel.DEBUG, name, msg, obj));
+        handler(LoggerLevel.DEBUG, () -> getConfiguration().getFormatter().formatWithArgs(LoggerLevel.DEBUG, name, msg, obj));
     }
 
     @Override
     public void error(String msg) {
-        handler(LoggerLevel.ERROR, () -> formatter.format(LoggerLevel.ERROR, name, msg));
+        handler(LoggerLevel.ERROR, () -> getConfiguration().getFormatter().format(LoggerLevel.ERROR, name, msg));
     }
 
     @Override
     public void error(String msg, Object... obj) {
-        handler(LoggerLevel.ERROR, () -> formatter.formatWithArgs(LoggerLevel.ERROR, name, msg, obj));
+        handler(LoggerLevel.ERROR, () -> getConfiguration().getFormatter().formatWithArgs(LoggerLevel.ERROR, name, msg, obj));
     }
 }

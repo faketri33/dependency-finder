@@ -2,18 +2,22 @@ package org.faketri.logger;
 
 public class BaseLoggerFactory{
 
-    private static IOPLogger logger;
+    private static LoggerConfiguration configuration;
 
     private BaseLoggerFactory() {
         /* This utility class should not be instantiated */
     }
 
-    private static IOPLogger getIopInstance(String name){
-        if (logger == null) logger = new IOPLogger(name);
-        return logger;
+    public static Logger getLogger(Class<?> clazz) {
+        return IOPLogger.of(clazz.getSimpleName(), getConfiguration());
     }
 
-    public static Logger getLogger(Class<?> clazz) {
-        return getIopInstance(clazz.getSimpleName());
+    public static LoggerConfiguration getConfiguration() {
+        if (configuration == null) configuration = new LoggerConfiguration();
+        return configuration;
+    }
+
+    public static void setConfiguration(LoggerConfiguration configuration) {
+        BaseLoggerFactory.configuration = configuration;
     }
 }

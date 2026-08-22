@@ -22,7 +22,7 @@ public class Main {
 
     static {
         GlobalProxyHandler.enableProfiling();
-        log.setLogLevel(LoggerLevel.TRACE);
+        BaseLoggerFactory.getConfiguration().setLevel(LoggerLevel.DEBUG);
 
         bs.register(new MavenDataParser());
     }

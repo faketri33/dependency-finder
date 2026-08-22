@@ -4,10 +4,10 @@ import java.util.function.Supplier;
 
 public abstract class BaseLogger {
 
-    private LoggerLevel level;
+    private final LoggerConfiguration configuration;
 
-    BaseLogger(LoggerLevel level) {
-        this.level = level;
+    BaseLogger(LoggerConfiguration configuration) {
+        this.configuration = configuration;
     }
 
     void handler(LoggerLevel level, Supplier<String> supplier){
@@ -20,10 +20,10 @@ public abstract class BaseLogger {
     }
 
     public LoggerLevel getLevel() {
-        return level;
+        return configuration.getLevel();
     }
 
-    public void setLevel(LoggerLevel level) {
-        this.level = level;
+    public LoggerConfiguration getConfiguration() {
+        return configuration;
     }
 }
