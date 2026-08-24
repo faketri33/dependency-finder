@@ -11,7 +11,6 @@ import org.faketri.reader.AbstractFileReader;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 public class CoreFinderDependency {
 
@@ -36,7 +35,7 @@ public class CoreFinderDependency {
 
         BuildSystem bs = BuildSystemDetector.detect(files);
 
-        log.info(bs.getFileName());
+        log.debug(bs.getFileName());
         var bf = dataReader.read(bs.getFileName());
 
         AbstractDataParser proxyParse = GlobalProxyHandler.newProxy(dataParserFactory.getParser(bs), AbstractDataParser.class);

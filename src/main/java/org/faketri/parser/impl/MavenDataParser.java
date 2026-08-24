@@ -53,6 +53,7 @@ public class MavenDataParser implements AbstractDataParser {
 
     private static class PomHandler extends DefaultHandler {
         private final StringBuilder elementValue = new StringBuilder();
+        private final StringBuilder deepsFullName = new StringBuilder();
         private final Stack<String> elementStack = new Stack<>();
 
         private String name = "";
@@ -70,9 +71,15 @@ public class MavenDataParser implements AbstractDataParser {
             elementValue.append(ch, start, length);
             if (version.isEmpty() && Objects.equals(elementStack.peek(), "version"))
                 version = elementValue.toString().trim();
+            if (Objects.equals(elementStack.peek(), "groupId") && !name.isEmpty())
+                deepsFullName.append(elementValue.toString().trim());
             if (Objects.equals(elementStack.peek(), "artifactId")) {
                 if (name.isEmpty()) name = elementValue.toString().trim();
-                else depends.add(new Dependency(elementValue.toString().trim(), null, "Dependency"));
+                else {
+                    depends.add(new Dependency(deepsFullName.append(":")
+                            .append(elementValue.toString().trim()).toString(), null, "Dependency"));
+                    deepsFullName.setLength(0);
+                }
             }
             if (Objects.equals(elementStack.peek(), "version") && !depends.isEmpty())
                 depends.getLast().setVersion(new Version(elementValue.toString().trim()));
