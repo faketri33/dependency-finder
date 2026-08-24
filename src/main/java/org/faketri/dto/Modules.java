@@ -20,6 +20,13 @@ public class Modules {
         this.deps = deps;
     }
 
+    public Modules(String name, List<Dependency> deps, Version version, BuildSystem buildSystem) {
+        this.name = name;
+        this.deps = deps;
+        this.version = version;
+        this.buildSystem = buildSystem;
+    }
+
     public String getName() {
         return name;
     }

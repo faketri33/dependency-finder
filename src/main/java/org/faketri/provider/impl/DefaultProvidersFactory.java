@@ -30,6 +30,7 @@ public class DefaultProvidersFactory implements ProvidersFactory {
     public Provider getProvider(String systemProvider) {
         return providers
                 .stream()
+                .filter(a -> a.canCheck(systemProvider) > 0)
                 .max(Comparator.comparingInt(a -> a.canCheck(systemProvider)))
                 .orElseThrow();
     }

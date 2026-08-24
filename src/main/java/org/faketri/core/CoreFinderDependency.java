@@ -2,7 +2,6 @@ package org.faketri.core;
 
 import org.faketri.dto.BuildSystem;
 import org.faketri.dto.Modules;
-import org.faketri.proxy.GlobalProxyHandler;
 import org.faketri.logger.BaseLoggerFactory;
 import org.faketri.logger.Logger;
 import org.faketri.parser.AbstractDataParser;
@@ -38,7 +37,7 @@ public class CoreFinderDependency {
         log.debug(bs.getFileName());
         var bf = dataReader.read(bs.getFileName());
 
-        AbstractDataParser proxyParse = GlobalProxyHandler.newProxy(dataParserFactory.getParser(bs), AbstractDataParser.class);
+        AbstractDataParser proxyParse = dataParserFactory.getParser(bs);
         Modules module = proxyParse.parse(bf);
         module.setBuildSystem(bs);
 

@@ -3,6 +3,7 @@ package org.faketri.core;
 import org.faketri.dto.BuildSystem;
 import org.faketri.parser.AbstractDataParser;
 import org.faketri.parser.AbstractDataParserFactory;
+import org.faketri.proxy.GlobalProxyHandler;
 
 import java.util.Comparator;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ public class DataParserFactory implements AbstractDataParserFactory {
      * Registration {@link AbstractDataParser} in system
      * */
     public void register(AbstractDataParser parser){
-        parsers.add(parser);
+        parsers.add(GlobalProxyHandler.newProxy(parser, AbstractDataParser.class));
     }
 
     /**
@@ -28,6 +29,7 @@ public class DataParserFactory implements AbstractDataParserFactory {
     public AbstractDataParser getParser(BuildSystem buildSystem) {
         return parsers
                 .stream()
+                .filter(a -> a.canParse(buildSystem) > 0)
                 .max(Comparator.comparingInt(a -> a.canParse(buildSystem)))
                 .orElseThrow();
     }

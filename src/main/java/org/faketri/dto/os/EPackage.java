@@ -5,7 +5,7 @@ public enum EPackage {
     DNF("Dandified YUM","/bin/dnf"),
     APT("Advanced Package Tool","/bin/apt"),
     PACMAN("Pacman","/bin/pacman"),
-    BREW("Homebrew", "/bin/brew");
+    BREW("Homebrew", "/opt/homebrew/bin/brew");
 
     private final String name;
     private final String command;
