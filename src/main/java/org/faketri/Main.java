@@ -34,7 +34,6 @@ public class Main {
         bs.register(new MavenDataParser());
 
         providers.register(new DNFProvider());
-        log.info(System.getProperty("os.version"));
         log.info(os.toString());
     }
 
@@ -50,7 +49,6 @@ public class Main {
         Modules pr =  cfd.getAll();
 
         log.info("{}", pr);
-        log.info("Os name {}", os.getName());
 
         Provider provider = GlobalProxyHandler.newProxy(providers.getProvider(os.getPackageManager().getName()), Provider.class);
 
