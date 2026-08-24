@@ -35,7 +35,7 @@ public class CoreFinderDependency {
 
         BuildSystem bs = BuildSystemDetector.detect(files);
 
-        log.info(bs.getFileName());
+        log.debug(bs.getFileName());
         var bf = dataReader.read(bs.getFileName());
 
         AbstractDataParser proxyParse = GlobalProxyHandler.newProxy(dataParserFactory.getParser(bs), AbstractDataParser.class);
