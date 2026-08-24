@@ -1,4 +1,4 @@
-package org.faketri.logger;
+package org.faketri.logger.formatter;
 
 public class ConsoleColors {
     private ConsoleColors() {

@@ -1,4 +1,6 @@
-package org.faketri.logger;
+package org.faketri.logger.formatter;
+
+import org.faketri.logger.LoggerLevel;
 
 public interface Formatter {
 

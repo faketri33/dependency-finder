@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public class GlobalProxyHandler implements InvocationHandler {
 
-    private static boolean profile = true;
+    private static volatile boolean profile = true;
 
     private final Object target;
     private final Logger log;
@@ -48,11 +48,11 @@ public class GlobalProxyHandler implements InvocationHandler {
         return val;
     }
 
-    public static void disableProfiling(){
+    public static synchronized void disableProfiling(){
         profile = false;
     }
 
-    public static void enableProfiling(){
+    public static synchronized void enableProfiling(){
         profile = true;
     }
 

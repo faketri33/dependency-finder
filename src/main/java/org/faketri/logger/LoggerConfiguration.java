@@ -1,5 +1,8 @@
 package org.faketri.logger;
 
+import org.faketri.logger.formatter.DefaultFormatter;
+import org.faketri.logger.formatter.Formatter;
+
 public class LoggerConfiguration {
 
     private LoggerLevel level;
