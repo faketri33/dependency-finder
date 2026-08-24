@@ -2,7 +2,6 @@ package org.faketri;
 
 import org.faketri.core.CoreFinderDependency;
 import org.faketri.core.DataParserFactory;
-import org.faketri.dto.Dependency;
 import org.faketri.dto.Modules;
 import org.faketri.dto.os.OS;
 import org.faketri.provider.Provider;
@@ -17,6 +16,9 @@ import org.faketri.reader.AbstractDirectoryReader;
 import org.faketri.reader.AbstractFileReader;
 import org.faketri.reader.impl.DefaultDataReader;
 import org.faketri.reader.impl.DirectoryReader;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class Main {
@@ -37,24 +39,26 @@ public class Main {
         log.info(os.toString());
     }
 
-    static void main() {
+    static void main(String[] args) {
+
+        if (args.length == 0) throw new IllegalArgumentException("First argument is missing");
+
         AbstractFileReader proxyReader = GlobalProxyHandler.newProxy(new DefaultDataReader(), AbstractFileReader.class);
         AbstractDirectoryReader proxyDirReader = GlobalProxyHandler.newProxy(new DirectoryReader(), AbstractDirectoryReader.class);
 
-        CoreFinderDependency cfd = new CoreFinderDependency("/home/faketri/git/my/dependency-reader",
-                proxyReader,
-                proxyDirReader,
-                bs
-        );
+        CoreFinderDependency cfd = new CoreFinderDependency(args[0], proxyReader, proxyDirReader, bs);
         Modules pr =  cfd.getAll();
 
         log.info("{}", pr);
 
-        Provider provider = GlobalProxyHandler.newProxy(providers.getProvider(os.getPackageManager().getName()), Provider.class);
+        ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+        Provider provider = providers.getProvider(os.getPackageManager().getName());
 
-        for (Dependency dep : pr.getDeps()) {
-            provider.existInSystem(dep);
+        pr.getDeps().forEach(dep ->{
+            executor.submit(() -> provider.existInSystem(dep));
             log.info("{}", dep);
-        }
+        });
+
+        executor.close();
     }
 }

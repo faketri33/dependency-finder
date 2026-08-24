@@ -2,6 +2,7 @@ package org.faketri.provider.impl;
 
 import org.faketri.provider.Provider;
 import org.faketri.provider.ProvidersFactory;
+import org.faketri.proxy.GlobalProxyHandler;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,7 +23,7 @@ public class DefaultProvidersFactory implements ProvidersFactory {
 
     @Override
     public void register(Provider provider) {
-        providers.add(provider);
+        providers.add(GlobalProxyHandler.newProxy(provider, Provider.class));
     }
 
     @Override

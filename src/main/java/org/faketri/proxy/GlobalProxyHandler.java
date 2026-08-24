@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public class GlobalProxyHandler implements InvocationHandler {
 
-    private static boolean profile = true;
+    private static boolean profile = false;
 
     private final Object target;
     private final Logger log;
