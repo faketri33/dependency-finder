@@ -13,6 +13,11 @@ public class LoggerConfiguration {
         setFormatter(new DefaultFormatter());
     }
 
+    public LoggerConfiguration(LoggerLevel level, Formatter formatter) {
+        this.level = level;
+        this.formatter = formatter;
+    }
+
     protected LoggerLevel getLevel() {
         return level;
     }

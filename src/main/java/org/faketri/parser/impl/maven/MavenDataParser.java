@@ -24,11 +24,24 @@ import java.util.*;
 
 public class MavenDataParser implements AbstractDataParser {
 
+    private enum MavenTags {
+        GROUP_ID("groupId"),
+        ARTEFACT_ID("artifactId"),
+        VERSION("version");
+
+        private final String name;
+
+        MavenTags(String name) {
+            this.name = name;
+        }
+    }
+
     private static final Logger log = BaseLoggerFactory.getLogger(MavenDataParser.class);
 
     private String name = "";
     private String version = "";
     private final List<Dependency> depends = new ArrayList<>();
+    private final List<Modules> modules = new ArrayList<>();
 
     private final XPath xpath = XPathFactory.newInstance().newXPath();
 
@@ -41,7 +54,7 @@ public class MavenDataParser implements AbstractDataParser {
     public Modules parse(ByteArrayInputStream data) {
         try {
             parsePom(data);
-            return new Modules(name, depends, new Version(version), new BuildSystem("MAVEN", ""));
+            return new Modules(name, depends, modules, new Version(version), new BuildSystem("MAVEN", ""));
         } catch (Exception ex){
             log.error(ex.getMessage());
         }
@@ -65,6 +78,7 @@ public class MavenDataParser implements AbstractDataParser {
         }
 
         collectParent(doc);
+        collectModules(doc);
         collectFromNodeList("/project/dependencies/dependency", doc, "Dependency");
         collectFromNodeList("/project/dependencyManagement/dependencies/dependency", doc, "DependencyManagement");
         collectPlugins("/project/build/plugins/plugin", doc, "Plugin");
@@ -78,12 +92,24 @@ public class MavenDataParser implements AbstractDataParser {
         if (parentNodes.getLength() == 0) return;
 
         Element parent = (Element) parentNodes.item(0);
-        String groupId = childText(parent, "groupId");
-        String artifactId = childText(parent, "artifactId");
-        String parentVersion = childText(parent, "version");
+        String groupId = childText(parent, MavenTags.GROUP_ID.name);
+        String artifactId = childText(parent, MavenTags.ARTEFACT_ID.name);
+        String parentVersion = childText(parent, MavenTags.VERSION.name);
 
         depends.add(new Dependency(groupId + ":" + artifactId,
                 parentVersion.isEmpty() ? null : new Version(parentVersion), "Parent"));
+    }
+
+    private void collectModules(Document doc) throws XPathExpressionException {
+        NodeList parentNodes = (NodeList) xpath.evaluate("/project/modules", doc, XPathConstants.NODESET);
+        if (parentNodes.getLength() == 0) return;
+
+        for (int i = 0; i < parentNodes.getLength(); i++){
+            Element parent = (Element) parentNodes.item(i);
+            String groupId = childText(parent, "module");
+            log.debug("Module name {}", groupId);
+            modules.add(new Modules(groupId));
+        }
     }
 
     private void collectFromNodeList(String expression, Document doc, String type) throws XPathExpressionException {
@@ -97,10 +123,10 @@ public class MavenDataParser implements AbstractDataParser {
         NodeList nodes = (NodeList) xpath.evaluate(expression, doc, XPathConstants.NODESET);
         for (int i = 0; i < nodes.getLength(); i++) {
             Element plugin = (Element) nodes.item(i);
-            String groupId = childText(plugin, "groupId");
+            String groupId = childText(plugin, MavenTags.GROUP_ID.name);
             if (groupId.isEmpty()) groupId = "org.apache.maven.plugins";
-            String artifactId = childText(plugin, "artifactId");
-            String pluginVersion = childText(plugin, "version");
+            String artifactId = childText(plugin, MavenTags.ARTEFACT_ID.name);
+            String pluginVersion = childText(plugin, MavenTags.VERSION.name);
 
             depends.add(new Dependency(groupId + ":" + artifactId,
                     pluginVersion.isEmpty() ? null : new Version(pluginVersion), type));
@@ -122,10 +148,10 @@ public class MavenDataParser implements AbstractDataParser {
             NodeList profilePlugins = (NodeList) xpath.evaluate("build/plugins/plugin", profile, XPathConstants.NODESET);
             for (int j = 0; j < profilePlugins.getLength(); j++) {
                 Element plugin = (Element) profilePlugins.item(j);
-                String groupId = childText(plugin, "groupId");
+                String groupId = childText(plugin, MavenTags.GROUP_ID.name);
                 if (groupId.isEmpty()) groupId = "org.apache.maven.plugins";
-                String artifactId = childText(plugin, "artifactId");
-                String pluginVersion = childText(plugin, "version");
+                String artifactId = childText(plugin, MavenTags.ARTEFACT_ID.name);
+                String pluginVersion = childText(plugin, MavenTags.VERSION.name);
 
                 depends.add(new Dependency(groupId + ":" + artifactId,
                         pluginVersion.isEmpty() ? null : new Version(pluginVersion), tag + "Plugin"));
@@ -134,9 +160,9 @@ public class MavenDataParser implements AbstractDataParser {
     }
 
     private void addDependency(Element dep, String type) {
-        String groupId = childText(dep, "groupId");
-        String artifactId = childText(dep, "artifactId");
-        String depVersion = childText(dep, "version");
+        String groupId = childText(dep, MavenTags.GROUP_ID.name);
+        String artifactId = childText(dep, MavenTags.ARTEFACT_ID.name);
+        String depVersion = childText(dep, MavenTags.VERSION.name);
 
         depends.add(new Dependency(groupId + ":" + artifactId,
                 depVersion.isEmpty() ? null : new Version(depVersion), type));

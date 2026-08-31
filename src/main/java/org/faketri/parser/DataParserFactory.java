@@ -1,8 +1,6 @@
-package org.faketri.core;
+package org.faketri.parser;
 
 import org.faketri.dto.BuildSystem;
-import org.faketri.parser.AbstractDataParser;
-import org.faketri.parser.AbstractDataParserFactory;
 import org.faketri.proxy.GlobalProxyHandler;
 
 import java.util.Comparator;

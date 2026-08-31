@@ -10,6 +10,10 @@ public class Modules {
     private Version version;
     private BuildSystem buildSystem;
 
+    public Modules(String name) {
+        this.name = name;
+    }
+
     public Modules(Version version, String name) {
         this.version = version;
         this.name = name;
@@ -20,11 +24,12 @@ public class Modules {
         this.deps = deps;
     }
 
-    public Modules(String name, List<Dependency> deps, Version version, BuildSystem buildSystem) {
+    public Modules(String name, List<Dependency> deps, List<Modules> modules, Version version, BuildSystem buildSystem) {
         this.name = name;
         this.deps = deps;
         this.version = version;
         this.buildSystem = buildSystem;
+        this.modules = modules;
     }
 
     public String getName() {

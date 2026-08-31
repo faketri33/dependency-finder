@@ -18,4 +18,9 @@ public class DirectoryReader implements AbstractDirectoryReader {
         return Arrays.asList(fileArray);
     }
 
+    @Override
+    public List<File> readDeep(String path, int deep) {
+        return List.of();
+    }
+
 }

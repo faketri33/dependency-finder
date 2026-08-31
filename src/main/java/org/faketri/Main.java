@@ -1,7 +1,7 @@
 package org.faketri;
 
 import org.faketri.core.CoreFinderDependency;
-import org.faketri.core.DataParserFactory;
+import org.faketri.parser.DataParserFactory;
 import org.faketri.dto.Modules;
 import org.faketri.dto.os.OS;
 import org.faketri.provider.Provider;
@@ -38,6 +38,7 @@ public class Main {
 
         providers.register(new DNFProvider());
         providers.register(new BrewProvider());
+
         log.info(os.toString());
     }
 
@@ -55,7 +56,7 @@ public class Main {
 
         ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
         Provider provider = providers.getProvider(os.getPackageManager().getName());
-
+        pr.getModules().forEach(m -> log.info("{}", m.toString()));
         pr.getDeps().forEach(dep ->{
             executor.submit(() -> provider.existInSystem(dep));
             log.info("{}", dep);
